@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.RequiresApi
+import androidx.core.view.ScrollingView
 import androidx.customview.widget.ViewDragHelper
 
 /**
@@ -123,20 +124,28 @@ class ExpendEacherOtherViewGroup : ViewGroup {
                 return false
             }
             else -> {
-
-
                 //如果是
-
                 var shouldIntercept=true;
                 scrollviews.forEach {
-
                     var rect= Rect()
                     it.getHitRect(rect)
                     //判断这个点是不在在这个VIEW之中
-                   shouldIntercept= !rect.contains(ev!!.x.toInt(),ev!!.y.toInt())
+                   shouldIntercept= !(rect.contains(ev!!.x.toInt(),ev!!.y.toInt())&&(it is ScrollingView))
+
+                   if( it is ScrollingView){
+                       Log.d("挡墙的滚动信息","${it.computeVerticalScrollRange()}....${it.computeVerticalScrollExtent()}>>>${it.computeVerticalScrollOffset()}")
+                      if(it.computeVerticalScrollRange()==(it.computeVerticalScrollExtent()+it.computeVerticalScrollOffset())){
+                          shouldIntercept=true
+                      }
+
+
+
+
+
+
+                   }
 
                 }
-
                 if(shouldIntercept){
                   return  dragHelper.shouldInterceptTouchEvent(ev!!);
                 }
