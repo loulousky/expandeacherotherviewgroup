@@ -1,2 +1,2 @@
-include ':app', ':expandeacherotherviewgroup'
+include ':app', ':expandeacherotherviewgroup', ':opendorview'
 rootProject.name='ViewDragHelperTest'

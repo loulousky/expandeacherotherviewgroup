@@ -15,7 +15,10 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //设置最小的展开高度
-        findViewById<ExpendEacherOtherViewGroup>(R.id.expandView).MinHeight=500;
+     val expandview=   findViewById<ExpendEacherOtherViewGroup>(R.id.expandView)
+        expandview.MinHeight=500
+
+        expandview.addview(findViewById(R.id.childview));
 
         findViewById<Button>(R.id.top_button).setOnClickListener {
 

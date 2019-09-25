@@ -2,6 +2,7 @@ package com.liuhai.expandeacherotherviewgroup
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Build
 import android.util.*
 import android.view.MotionEvent
@@ -23,6 +24,8 @@ class ExpendEacherOtherViewGroup : ViewGroup {
 
     val display11: DisplayMetrics
 
+
+    val scrollviews= arrayListOf<View>()
      var fristInit:Boolean=false
 
     init {
@@ -38,6 +41,19 @@ class ExpendEacherOtherViewGroup : ViewGroup {
         setMeasuredDimension(height, width)
 
     }
+
+
+
+
+    fun addview(scrollview:View){
+        scrollviews.add(scrollview)
+
+
+    }
+
+
+    fun remove(scrollview: View)=scrollviews.remove(scrollview)
+
 
 
     /**
@@ -104,15 +120,30 @@ class ExpendEacherOtherViewGroup : ViewGroup {
         return when (action) {
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
                 dragHelper.cancel()
-
                 return false
             }
             else -> {
-                dragHelper.shouldInterceptTouchEvent(ev!!);
+
+
+                //如果是
+
+                var shouldIntercept=true;
+                scrollviews.forEach {
+
+                    var rect= Rect()
+                    it.getHitRect(rect)
+                    //判断这个点是不在在这个VIEW之中
+                   shouldIntercept= !rect.contains(ev!!.x.toInt(),ev!!.y.toInt())
+
+                }
+
+                if(shouldIntercept){
+                  return  dragHelper.shouldInterceptTouchEvent(ev!!);
+                }
+                  return false
+
             }
         }
-
-
     }
 
 
@@ -182,12 +213,16 @@ class ExpendEacherOtherViewGroup : ViewGroup {
                         changedView.height,
                         dragviwe.greenview.width,
                         dragviwe.height
-                    );
-                    dragviwe.setLayout(changedView, changedView.height ) //改变VIEW的子view大小更新
+                    )
+                    if(changedView is ViewGroup) {
+                        dragviwe.setLayout(changedView, changedView.height)
+                    }//改变VIEW的子view大小更新
+
+                    if(dragviwe.greenview is ViewGroup){
                     dragviwe.setLayout(
                         dragviwe.greenview,
                         dragviwe.height - changedView.height
-                    )
+                    )}
                     //重新计算子VIEWGROUP中的内容
                     dragviwe.requestLayout()
                 }
@@ -200,13 +235,17 @@ class ExpendEacherOtherViewGroup : ViewGroup {
                         changedView.width,
                         dragviwe.height
                     )
-                    dragviwe.setLayout(changedView, dragviwe.height-top)
+                    if(changedView is ViewGroup) {
+                        dragviwe.setLayout(changedView, dragviwe.height - top)
+                    }
 
                     dragviwe.redview.layout(0, 0, dragviwe.redview.width, top);
-                    dragviwe.setLayout(
-                        dragviwe.redview,
-                        top
-                    )
+                    if(dragviwe.redview is ViewGroup) {
+                        dragviwe.setLayout(
+                            dragviwe.redview,
+                            top
+                        )
+                    }
 
                     dragviwe.requestLayout()
 
